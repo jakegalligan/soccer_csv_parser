@@ -119,6 +119,24 @@ var clubChecker = (club) => {
         addToDB: true
     }
 }
+var nations = {};
+var nationChecker = (nation) => {
+     if (nations[nation]) {
+        return {
+            nationName: nation,
+            nationId: nations[nation],
+            addToDB: false
+        }
+    }
+
+    var newNationId = v4()
+    nations[nation] = newNationId
+    return {
+        nationName: nation,
+        nationId: newNationId,
+        addToDB: true
+    }
+}
 
 var feetToInches = (height) => {
     var firstNumber = parseInt(height[0], 10);
@@ -142,8 +160,11 @@ results.forEach(result => {
     var clubResults = clubChecker(result.Club);
     var clubName = clubResults.clubName;
     var clubId = clubResults.clubId;
-    var addToDB = clubResults.addToDB;
-    result.nationId = v4();
+    var addClubToDB = clubResults.addToDB;
+    var nationResults = nationChecker(result.Nationality);
+    var nation = nationResults.nationName;
+    var nationId = nationResults.nationId;
+    var addNationToDb = nationResults.addToDB;
     result.playerRatingId = v4();
     result.playerContractId = v4();
     result.playerId = v4();
@@ -157,11 +178,11 @@ results.forEach(result => {
     var weight = result.Weight.slice(0,-3);
 
     // if club doesn't exist don't make a new one
-    if (addToDB) insertClubs(clubId, clubName);
-    insertNations(result.nationId, result.Nationality, result.international_reputation);
-    insertPlayers(result.playerId,result.Name, result.Age, result.Photo, result.Position, result.jersey_number, height, weight, result.clubId, result.nationId)
-    insertPlayerRatings(result.playerRatingId, result.playerId, result.Overall, result.Potential, result.weak_foot, result.skill_moves, result.sprint_speed, result.shot_power, result.long_shots, result.Aggression, result.Dribbling, result.fk_accuracy, result.Reaction, result.Strength);
-    insertPlayerContracts(result.playerContractId, result.playerId,releaseClause, result.contract_value_until, result.on_loan_from, new Date(result.joined), value, wage);
+    if (addClubToDB) insertClubs(clubId, clubName);
+    if (addNationToDb) insertNations(nationId, nation, result.international_reputation);
+    insertPlayers(result.playerId,result.Name, result.Age, result.Photo, result.Position, result.jersey_number, height, weight, clubId, result.nationId)
+    insertPlayerRatings(result.playerRatingId, result.playerId, result.Overall, result.Potential, result.weak_foot, result.skill_moves, result.sprint_speed, result.shot_power, result.long_shots, result.Aggression, result.Dribbling, result.fk_accuracy, result.Reactions, result.Strength);
+    insertPlayerContracts(result.playerContractId, result.playerId,releaseClause, result.contract_value_until, result.loaned_from, new Date(result.Joined), value, wage);
 })
 }
 
