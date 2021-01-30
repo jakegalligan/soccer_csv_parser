@@ -6,11 +6,6 @@ const { v4 } = require('uuid');
 
 // connect to db client
 const client = new Client({
-    user: "postgres",
-    host: "localhost",
-    database: "postgres",
-    password: "jg1996",
-    port: 5432
 });
 client.connect();
 
